@@ -6,6 +6,8 @@ This document details the technologies, development setup, and technical constra
 
 - Python for the application
 - opencv for interacting with the camera
+- use pytest for python unittest
+- use [nanoowl](https://github.com/NVIDIA-AI-IOT/nanoowl) to detect the frame within the image
 
 ## Development Setup
 
