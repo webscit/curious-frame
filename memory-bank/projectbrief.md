@@ -12,6 +12,7 @@ This document outlines the core requirements and goals of the project. It serves
 
 - Use Python
 - Use opencv to capture the camera stream
+- Use sounddevice and pyaudio packages for handling microphone and speaker
 - Use Gemma3n model with ollama
 
 ## Scope
