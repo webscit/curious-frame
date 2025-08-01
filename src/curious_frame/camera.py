@@ -37,9 +37,9 @@ class Camera:
     def _gstreamer_pipeline(
         self,
         camera_id: int = 0,
-        capture_width: int = 1280,
-        capture_height: int = 720,
-        framerate: int = 30,
+        capture_width: int = 1920, #1280,
+        capture_height: int = 1080, #720,
+        framerate: int = 15, #30,
     ) -> str:
         """Create a GStreamer pipeline for the camera.
 

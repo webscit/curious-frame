@@ -19,6 +19,8 @@ classifiers = [
 dependencies = [
     "opencv-python",
     "ollama",
+    "torch",
+    "nanoowl @ git+https://github.com/NVIDIA-AI-IOT/nanoowl.git",
 ]
 
 [project.urls]
