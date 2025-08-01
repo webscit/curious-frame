@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 """Vision module for the Curious Frame project."""
+import cv2
 import numpy as np
 
 
@@ -17,5 +18,28 @@ class Vision:
         Returns:
             The cropped image of the frame, or None if no frame is found.
         """
-        # Placeholder implementation
-        return frame
+        # Convert the image to grayscale
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+        # Apply a Gaussian blur to reduce noise
+        blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+
+        # Use Canny edge detection
+        edges = cv2.Canny(blurred, 50, 150)
+
+        # Find contours
+        contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+        # Find the largest contour
+        if not contours:
+            return None
+
+        largest_contour = max(contours, key=cv2.contourArea)
+
+        # Get the bounding box of the largest contour
+        x, y, w, h = cv2.boundingRect(largest_contour)
+
+        # Crop the image to the bounding box
+        cropped_frame = frame[y : y + h, x : x + w]
+
+        return cropped_frame

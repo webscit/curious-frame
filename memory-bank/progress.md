@@ -6,9 +6,11 @@ This document tracks the project's status, including what works, what's left to 
 
 - **Project Scaffolding**: A complete Python package structure has been created with `pyproject.toml`, a `src` directory containing the main package, and a `tests` directory.
 - **Modular Structure**: The core modules (`camera`, `audio`, `language`, `vision`, `main`) have been created with initial class definitions and placeholder logic.
-- **Camera Module**: The `camera.py` module is implemented with a `Camera` class capable of initializing a camera device and capturing frames using OpenCV.
-- **Main Application Loop**: The `main.py` script contains a basic loop that initializes the camera and displays the video feed in a window, ready for testing.
-- **Documentation**: A `README.md` file has been created with basic project information and setup instructions. The memory bank has been updated to reflect the current state of the project.
+- **Camera Module**: The `camera.py` module is implemented with a `Camera` class that correctly initializes a USB camera on a Jetson device using a GStreamer pipeline.
+- **Basic Vision**: The `vision.py` module can perform basic contour detection to find and crop a frame from the camera feed.
+- **Main Application Loop**: The `main.py` script successfully integrates the camera and vision modules to capture, process, and save a frame.
+- **Initial Tests**: A basic test suite has been started with `tests/test_camera.py`.
+- **Documentation**: The memory bank is up-to-date with the latest progress and technical decisions.
 
 ## What's Left to Build
 
