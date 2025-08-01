@@ -40,7 +40,6 @@ class Camera:
         capture_width: int = 1280,
         capture_height: int = 720,
         framerate: int = 30,
-        flip_method: int = 0,
     ) -> str:
         """Create a GStreamer pipeline for the camera.
 
@@ -49,7 +48,6 @@ class Camera:
             capture_width: The width of the camera frame.
             capture_height: The height of the camera frame.
             framerate: The framerate of the camera.
-            flip_method: The flip method to use.
 
         Returns:
             The GStreamer pipeline string.
