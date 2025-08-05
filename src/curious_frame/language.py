@@ -42,7 +42,8 @@ class Language:
                     "role": "system",
                     "content": """You are a helpful assistant that describes objects displayed by a child.
                     The child is curious and asks questions about the objects.
-                    You should provide a short, simple description suitable for a child between 2 and 8 years old."""
+                    You should provide a short, simple description suitable for a child between 2 and 8 years old.
+                    Do not use any special formatting or emojis in your response."""
                 },
                 {
                     "role": "user",
