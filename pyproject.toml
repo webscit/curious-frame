@@ -30,6 +30,9 @@ dependencies = [
 "Homepage" = "https://github.com/pypa/sampleproject"
 "Bug Tracker" = "https://github.com/pypa/sampleproject/issues"
 
+[project.scripts]
+curious_frame = "curious_frame.main:main"
+
 [tool.ruff]
 line-length = 88
 select = ["E", "F", "I"]
