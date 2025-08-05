@@ -17,10 +17,13 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
+    "accelerate",
     "opencv-python",
-    "ollama",
+    "optimum-quanto",
+    "requests",
     "torch",
-    "nanoowl @ git+https://github.com/NVIDIA-AI-IOT/nanoowl.git",
+    "torchvision",
+    "transformers",
 ]
 
 [project.urls]

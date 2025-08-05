@@ -2,81 +2,50 @@
 #
 # SPDX-License-Identifier: MIT
 """Vision module for the Curious Frame project."""
+
 import cv2
 import numpy as np
-from nanoowl.owl_predictor import OwlPredictor
-from nanoowl.tree import Tree
-from nanoowl.tree_predictor import (
-    TreePredictor
-)
 import PIL.Image
-
-OWL_ENCODER_ENGINE = "/opt/nanoowl/data/owl_image_encoder_patch32.engine"
+from transformers import AutoModelForCausalLM, QuantoConfig
 
 
 class Vision:
     """A class to handle vision-related tasks."""
 
-    def __init__(self, threshold: float = 0.1):
-        """Initializes the Vision module.
+    def __init__(
+        self, model_name: str = "vikhyatk/moondream2", revision: str = "2025-06-21"
+    ):
+        """Initializes the Vision module."""
+        quanto_config = QuantoConfig(weights="int8")
 
-        Args:
-            threshold: The confidence threshold for object detection.
-        """
-        self.predictor = TreePredictor(
-            owl_predictor=OwlPredictor(
-                image_encoder_engine=OWL_ENCODER_ENGINE,
-            )
+        self.model = AutoModelForCausalLM.from_pretrained(
+            model_name,
+            revision=revision,
+            trust_remote_code=True,
+            device_map="auto",
+            quantization_config=quanto_config,
         )
-        self.text = '["a frame"]'
-        self.threshold = threshold
-        tree = Tree.from_prompt(self.text)
-        clip_encodings = self.predictor.encode_clip_text(tree)
-        owl_encodings = self.predictor.encode_owl_text(tree)
-        self._prompt_data = {
-            "tree": tree,
-            "clip_text_encodings": clip_encodings,
-            "owl_text_encodings": owl_encodings
-        }
+        self.query = "List object within the cardboard frame."
 
-    def find_frame(self, frame: np.ndarray) -> np.ndarray | None:
-        """Finds the frame in the image.
+    def find_objects(self, frame: np.ndarray) -> str | None:
+        """Finds the objects displayed in the cardboard frame within the image.
 
         Args:
             frame: The image to search for the frame in.
 
         Returns:
-            The cropped image of the frame, or None if no frame is found.
+            The objects found in the cardboard frame, or None if no objects are found.
         """
         image = _cv2_to_pil(frame)
 
-        output = self.predictor.predict(
-            image=image, **self._prompt_data, threshold=self.threshold
-        )
+        output = self.model.query(image, self.query)
 
-        detections = [*output.detections][1:]  # Skip the first detection which is usually the background
-        if len(detections) == 0:
-            print("No detections found.")
+        if output is None or not output.get("answer", ""):
             return None
-        else:
-            print(f"Found detections: {detections}")
-        
-        # Find the detection with the largest area
-        areas = []
-        for detection in filter(lambda d: d.scores[0] > self.threshold, detections):
-            box = detection.box
-            x_min, y_min, x_max, y_max = [*map(int, box)]
-            area = (x_max - x_min) * (y_max - y_min)
-            areas.append(area)
 
-        max_idx = int(np.argmax(areas))
-        
-        # Get the largest bounding box
-        x_min, y_min, x_max, y_max = [*map(int, detections[max_idx].box)]
+        print(f"Found objects: {output['answer']}")
+        return output["answer"]
 
-        print(f"Found frame at: {x_min}, {y_min}, {x_max}, {y_max}")
-        # Crop the image to the bounding box
-        return frame[y_min : y_max, x_min : x_max]
 
 def _cv2_to_pil(image):
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
