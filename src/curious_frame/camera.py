@@ -34,6 +34,15 @@ class Camera:
         """Releases the camera."""
         self.cap.release()
 
+    def save_frame(self, path: str, frame: np.ndarray) -> None:
+        """Saves a frame to a file.
+
+        Args:
+            path: The path to save the frame to.
+            frame: The frame to save.
+        """
+        cv2.imwrite(path, frame)
+
     def _gstreamer_pipeline(
         self,
         camera_id: int = 0,
