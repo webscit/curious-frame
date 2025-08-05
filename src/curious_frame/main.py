@@ -89,14 +89,18 @@ def main() -> None:
         objects = None
         description = None
         try:
+            audio.speak("I am looking for objects.")
             objects = vision.find_objects(frame)
             if objects is not None:
+                audio.speak(f"I found {objects}, let me think about it.")
                 description = language.chat(objects)
                 print(f"Description: {description}")
                 audio.speak(description)
             else:
+                audio.speak("I could not find any objects.")
                 print("No objects found.")
         except Exception as e:
+            audio.speak("I don't know what to say, sorry.")
             print(f"An error occurred: {e}")
             description = f"Error: {e}"
 

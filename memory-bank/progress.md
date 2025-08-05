@@ -14,6 +14,8 @@ This document tracks the project's status, including what works, what's left to 
 
 - **Language Model Integration**: The `language.py` module is now integrated with the main application loop. It can take a cropped image, send it to the Gemma3n model, and receive a textual description.
 - **Audio Output**: The `audio.py` module is now implemented with a text-to-speech engine to voice the model's responses. The audio module is integrated in the main application loop.
+- **Audio Caching**: The `audio.py` module now caches generated audio to avoid redundant API calls.
+- **Intermediate Audio Feedback**: The application now provides audio feedback to the user during intermediate steps.
 
 ## What's Left to Build
 

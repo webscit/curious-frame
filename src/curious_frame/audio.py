@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: MIT
 """Audio module for the Curious Frame project."""
+import hashlib
+import os
 import subprocess
 import tempfile
 
@@ -24,29 +26,35 @@ class Audio:
         """
         self.piper_url = piper_url
         self.aplay_device = aplay_device
+        self.cache_dir = "audio_cache"
+        if not os.path.exists(self.cache_dir):
+            os.makedirs(self.cache_dir)
 
     def speak(self, text: str) -> None:
-        """Speaks the given text.
+        """Speaks the given text, using a cache to avoid regenerating audio.
 
         Args:
             text: The text to speak.
         """
-        response = requests.get(self.piper_url, params={"text": text}, timeout=60)
-        response.raise_for_status()
+        # Generate a unique filename from the hash of the text
+        text_hash = hashlib.md5(text.encode()).hexdigest()
+        cached_audio_path = os.path.join(self.cache_dir, f"{text_hash}.wav")
 
-        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temp_wav:
-            temp_wav.write(response.content)
-            temp_wav_path = temp_wav.name
+        if not os.path.exists(cached_audio_path):
+            response = requests.get(self.piper_url, params={"text": text}, timeout=60)
+            response.raise_for_status()
+            with open(cached_audio_path, "wb") as f:
+                f.write(response.content)
 
         try:
             subprocess.run(
-                ["aplay", "-D", self.aplay_device, temp_wav_path],
+                ["aplay", "-D", self.aplay_device, cached_audio_path],
                 check=True,
                 capture_output=True,
                 text=True,
             )
-        finally:
-            # Clean up the temporary file
-            import os
-
-            os.remove(temp_wav_path)
+        except subprocess.CalledProcessError as e:
+            print(f"Error playing audio: {e.stderr}")
+            # Clean up the cached file if playback fails
+            if os.path.exists(cached_audio_path):
+                os.remove(cached_audio_path)
