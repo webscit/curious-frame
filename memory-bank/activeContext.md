@@ -4,10 +4,15 @@ This document tracks the current focus of development, including recent changes,
 
 ## Current Focus
 
-The current focus is on improving the user experience by providing audio feedback during the application's execution.
+The current focus is on internationalization, adding support for French language output.
 
 ## Recent Changes
 
+- **French Language Support**: Implemented internationalization to handle French language output.
+  - The application now detects the presence of a "french flag" to switch the language.
+  - `language.py` was updated to include a `translate` method.
+  - `audio.py` was updated to support French TTS and to cache translated audio.
+  - `main.py` was updated to orchestrate the language switching.
 - **Audio Caching**: Implemented a caching mechanism in `audio.py` to store generated audio files and avoid redundant calls to the TTS server. This improves performance and reduces resource usage.
 - **Intermediate Audio Feedback**: Added audio cues to `main.py` to inform the user about the application's progress, such as when it's looking for objects and when it has found them.
 

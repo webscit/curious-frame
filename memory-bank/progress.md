@@ -16,6 +16,7 @@ This document tracks the project's status, including what works, what's left to 
 - **Audio Output**: The `audio.py` module is now implemented with a text-to-speech engine to voice the model's responses. The audio module is integrated in the main application loop.
 - **Audio Caching**: The `audio.py` module now caches generated audio to avoid redundant API calls.
 - **Intermediate Audio Feedback**: The application now provides audio feedback to the user during intermediate steps.
+- **French Language Support**: The application can now switch to French when a french flag is detected. This includes translating the LLM response and using a French TTS voice.
 
 ## What's Left to Build
 
