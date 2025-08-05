@@ -4,9 +4,9 @@ build-backend = "hatchling.build"
 
 [project]
 name = "curious_frame"
-version = "0.0.1"
+version = "0.1.0"
 authors = [
-  { name="Jetorin", email="jetorin@example.com" },
+  { name="Frédéric Collonval", email="frederic.collonval@webscit.com" },
 ]
 description = "A cool tutor for kids for the Gemma3n Impact Challenge"
 readme = "README.md"
@@ -25,10 +25,12 @@ dependencies = [
     "torchvision",
     "transformers",
 ]
+license = "MIT"
+license-files = ["LICENSE"]
 
 [project.urls]
-"Homepage" = "https://github.com/pypa/sampleproject"
-"Bug Tracker" = "https://github.com/pypa/sampleproject/issues"
+"Homepage" = "https://github.com/webscit/curious-frame"
+"Bug Tracker" = "https://github.com/webscit/curious-frame/issues"
 
 [project.scripts]
 curious_frame = "curious_frame.main:main"

@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2024-present Jetorin <jetorin@example.com>
+# SPDX-FileCopyrightText: 2025-present Frédéric Collonval <frederic.collonval@webscit.com>
 #
 # SPDX-License-Identifier: MIT
 """Curious Frame."""
