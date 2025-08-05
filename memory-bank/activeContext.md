@@ -19,5 +19,4 @@ The immediate next steps are:
 
 1.  **Refine Frame Detection**: Improve the `find_frame` method in `vision.py` to be more robust. This may involve using more advanced techniques like shape approximation to ensure the detected contour is a rectangle.
 2.  **Extract Action Card and Image**: Implement logic to identify and extract the two regions of interest from within the detected frame: the action card and the main image.
-3.  **Integrate Language Model**: Begin implementing the `language.py` module to take the extracted image and action card as input and generate a prompt for the Gemma3n model.
-4.  **Develop Vision Tests**: Create `tests/test_vision.py` to test the frame and sub-region detection logic.
+3.  **Develop Vision Tests**: Create `tests/test_vision.py` to test the frame and sub-region detection logic.

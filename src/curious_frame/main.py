@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: MIT
 """Main module for the Curious Frame project."""
 
+from curious_frame.audio import Audio
 from curious_frame.camera import Camera
 from curious_frame.language import Language
 from curious_frame.vision import Vision
@@ -13,6 +14,7 @@ def main() -> None:
     camera = Camera()
     vision = Vision()
     language = Language()
+    audio = Audio()
 
     while True:
         frame = camera.get_frame()
@@ -23,6 +25,7 @@ def main() -> None:
         if objects is not None:
             description = language.chat(objects)
             print(f"Description: {description}")
+            audio.speak(description)
         else:
             print("No objects found.")
 
