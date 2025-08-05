@@ -15,7 +15,7 @@ class Language:
     """A class to interact with the language model."""
 
     def __init__(
-        self, model: str = "unsloth/gemma-3n-E2B-it-GGUF", url: str = "http://localhost:11434/api/chat"
+        self, model: str = "hf.co/unsloth/gemma-3n-E2B-it-GGUF:Q4_K_M", url: str = "http://127.0.0.1:11434/api/chat"
     ):
         """Initializes the language model.
 
@@ -40,18 +40,20 @@ class Language:
             "messages": [
                 {
                     "role": "system",
-                    "content": """You are a helpful assistant that describes objects displayed by a child. 
+                    "content": """You are a helpful assistant that describes objects displayed by a child.
                     The child is curious and asks questions about the objects.
                     You should provide a short, simple description suitable for a child between 2 and 8 years old."""
                 },
                 {
                     "role": "user",
-                    "content": f"Provide a short description of those objects: {objects}.",
+                    "content": f"Tell what those objects are and what they are used to: {objects}.",
                 }
             ],
-            "stream": True,
+            "stream": False,
             "keep_alive": -1,
         }
-        response = requests.post(self.url, json=data, headers={'Content-Type': 'application/json'})
+
+        print(f"Prompt sent: {data}")
+        response = requests.post(self.url, json=data)
         response.raise_for_status()
-        return response.json().get('response', '').strip()
+        return response.json().get('message', {}).get('content').strip()
