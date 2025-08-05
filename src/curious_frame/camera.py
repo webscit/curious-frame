@@ -9,7 +9,7 @@ import numpy as np
 class Camera:
     """A class to interact with the camera."""
 
-    def __init__(self, camera_id: int = 0, width: int = 1280, height: int = 720, fps=30) -> None:
+    def __init__(self, camera_id: int = 0, width: int = 1280, height: int = 720, fps=15) -> None:
         """Initializes the camera.
 
         Args:
@@ -46,9 +46,9 @@ class Camera:
     def _gstreamer_pipeline(
         self,
         camera_id: int = 0,
-        capture_width: int = 1920, #1280,
-        capture_height: int = 1080, #720,
-        framerate: int = 15, #30,
+        capture_width: int = 1920,
+        capture_height: int = 1080,
+        framerate: int = 15,
     ) -> str:
         """Create a GStreamer pipeline for the camera.
 

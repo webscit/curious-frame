@@ -25,7 +25,7 @@ def main() -> None:
     parser.add_argument(
         "--height", type=int, default=720, help="The height of the camera frame (default: 720)."
     )
-    parser.add_argument("--fps", type=int, default=30, help="The framerate of the camera (default: 30).")
+    parser.add_argument("--fps", type=int, default=15, help="The framerate of the camera (default: 15).")
     parser.add_argument(
         "--capture-dir",
         type=str,
