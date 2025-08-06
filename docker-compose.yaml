@@ -1,16 +1,4 @@
 services:
-  ollama:
-    build:
-      context: ./ollama
-      dockerfile: Dockerfile
-    # ports:
-    #   - "11434:11434"
-    environment:
-      - NVIDIA_DRIVER_CAPABILITIES=compute,utility,graphics
-    runtime: nvidia
-    shm_size: 8g
-    networks:
-      - curious_frame_network
   piper:
     build:
       context: ./piper_server
@@ -21,17 +9,22 @@ services:
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility,graphics
     runtime: nvidia
     shm_size: 8g
-    networks:
-      - curious_frame_network
+    volumes:
+      - "/etc/enctune.conf:/etc/enctune.conf"
+      - "/etc/nv_tegra_release:/etc/nv_tegra_release"
+      - "/etc/localtime:/etc/localtime:ro"
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/run/user/1000/pulse:/run/user/1000/pulse"
+      - "/tmp/argus_socket:/tmp/argus_socket"
+    network_mode: "host"
 
   curious-frame:
     build:
       context: .
       dockerfile: Dockerfile
     depends_on:
-      - ollama
       - piper
-    command: python3 -m curious_frame --ollama-url http://ollama:11434/api/chat --piper-url http://piper:5000
+    command: python3 -m curious_frame
     environment:
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility,graphics
       - PULSE_SERVER=unix:/run/user/1000/pulse/native
@@ -49,8 +42,4 @@ services:
       - "/etc/timezone:/etc/timezone:ro"
       - "/run/user/1000/pulse:/run/user/1000/pulse"
       - "/tmp/argus_socket:/tmp/argus_socket"
-    networks:
-      - curious_frame_network
-
-networks:
-  curious_frame_network: {}
+    network_mode: "host"
