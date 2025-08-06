@@ -201,7 +201,7 @@ def main() -> None:
             print(f"Description: {description}")
             audio.speak(description)
 
-            time.sleep(10)
+            time.sleep(5)
             audio.speak("Do you want to show me something else?")
         except KeyboardInterrupt:
             audio.speak("Stopping now! Goodbye!", language="en", skip_translation=True)
