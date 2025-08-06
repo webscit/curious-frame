@@ -1,0 +1,10 @@
+[Unit]
+Description=Curious Frame Autostart
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/curious_frame.sh
+Type=simple
+
+[Install]
+WantedBy=multi-user.target

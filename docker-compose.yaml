@@ -24,7 +24,7 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - piper
-    command: python3 -m curious_frame
+    command: python3 -m curious_frame --capture-dir /app/snapshots
     environment:
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility,graphics
       - PULSE_SERVER=unix:/run/user/1000/pulse/native
@@ -42,4 +42,5 @@ services:
       - "/etc/timezone:/etc/timezone:ro"
       - "/run/user/1000/pulse:/run/user/1000/pulse"
       - "/tmp/argus_socket:/tmp/argus_socket"
+      - "./snapshots:/app/snapshots"
     network_mode: "host"

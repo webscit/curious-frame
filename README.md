@@ -2,7 +2,7 @@
 
 Curious Frame is a Python application designed for the Gemma3n Impact Challenge. It serves as an interactive, offline-ready learning experience for curious kids supporting multi-languages. The application uses a camera to identify objects and "action cards" presented within a physical frame, and then uses the Gemma3n model to provide educational information about the objects through speech.
 
-## How to Test
+## How to Install
 
 To run this project, you'll need a NVIDIA® Jetson Orin Nano™ Developer Kit with JetPack 6.2.1 installed; see [Initial Setup Guide](https://www.jetson-ai-lab.com/initial_setup_jon.html).
 
@@ -12,18 +12,41 @@ You will need a cardboard frame. The one I did has the following dimensions:
 
 The action cards can be found in [./assets/illustrations.odt](./assets/illustrations.odt) - to be printed on a standard paper printer.
 
-Get the code, running the following commands:
+Get the code and setup the nano, running the following commands:
 
 ```bash
 git clone https://github.com/webscit/curious-frame.git
 cd curious-frame
+bash ./setup.sh
 ```
 
-Run the application using the following command:
+From now on, the application should start automatically when the Jetson Nano is started. But you can also run the application using the following command:
 
 ```bash
 docker compose up
 ```
+
+What got installed:
+- `ollama` on the host machine - it is installed to start automatically with the Jetson Nano
+- a custom service `curious_frame` to start the containers automatically with the Jetson Nano
+
+That's it! Everything else is within Docker containers.
+
+> The container will use the host network. So be careful as the configuration
+> is for development only as its missing security features.
+
+## How to uninstall
+
+- Uninstall the `curious_frame` service by executing the command:
+
+```
+sudo systemctl stop curious_frame
+sudo systemctl disable curious_frame
+sudo rm /etc/systemd/system/curious_frame.service
+sudo rm /usr/local/bin/curious_frame.sh
+```
+
+- To uninstall `ollama`, look at the [official documentation](https://github.com/ollama/ollama/blob/main/docs/linux.md#uninstall)
 
 ## Architecture
 
