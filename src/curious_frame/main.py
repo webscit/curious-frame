@@ -4,6 +4,8 @@
 """Main module for the Curious Frame project."""
 import argparse
 import csv
+import os
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -69,6 +71,23 @@ def main() -> None:
         choices=["en", "fr"],
         help="The default language to use (default: en).",
     )
+    parser.add_argument(
+        "--wait-time",
+        type=int,
+        default=60,
+        help="The time to wait in seconds when identical objects are detected (default: 60).",
+    )
+    parser.add_argument(
+        "--shutdown-timeout",
+        type=int,
+        default=600,
+        help="The time in seconds before shutting down if identical objects are detected repeatedly (default: 600).",
+    )
+    parser.add_argument(
+        "--shutdown-at-exit",
+        action="store_true",
+        help="Shutdown the OS when the program exits.",
+    )
     args = parser.parse_args()
 
     camera = Camera(
@@ -85,7 +104,12 @@ def main() -> None:
 
     audio.speak("Hey there! I am curious about the world around me. Let's explore together!")
 
+    last_objects = set()
+    identical_start_time = None
+    asked_for_new_object = False
+
     while True:
+        print("Taking a new snapshot...")
         frame = camera.get_frame()
         if frame is None:
             break
@@ -94,52 +118,81 @@ def main() -> None:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         image_path = capture_dir / f"{timestamp}.jpg"
         camera.save_frame(str(image_path), frame)
+        print(f"Snapshot taken and saved in {image_path!s}")
 
-        objects = None
-        description = None
+        objects = set()
+        description = ""
         objects_list = None
         try:
             # audio.speak("I am looking for objects.")
-            objects_list = vision.find_objects(frame)
+            print("Analyzing the snapshot...")
+            objects_list = vision.find_objects(frame) or ""
+            print(f"Found objects: {objects_list}")
             found_flag = False
 
-            if objects_list is not None:
-                objects = []
-                for obj in objects_list.split(","):
-                    obj = obj.strip()
-                    if obj:
-                        if obj.lower() != "french flag":
-                            objects.append(obj)
-                        else:
-                            found_flag = True
-                            if audio.language != "fr":
-                                audio.set_language("fr")
-                                audio.speak("Je vais maintenant parler en français.")
-                
-                if not found_flag and audio.language != "en":
-                    audio.set_language("en")
-                    audio.speak("I'm switching to English.")
+            for obj in objects_list.split(","):
+                obj = obj.strip()
+                if obj:
+                    if "french flag" not in obj.lower():
+                        if obj.lower() != "unknown":
+                            objects.add(obj)
+                    else:
+                        found_flag = True
+                        if audio.language != "fr":
+                            audio.set_language("fr")
+                            audio.speak("Je vais maintenant parler en français.", skip_translation=True)
+            
+            if not found_flag and audio.language != "en":
+                audio.set_language("en")
+                audio.speak("I'm switching to English.")
 
-                if objects:
-                    object_str = ", ".join(objects)
-                    audio.speak(f"I found {object_str}, let me think about it.")
-                    description = language.chat(object_str)
-                    print(f"Description: {description}")
-                    audio.speak(description)
-                elif found_flag:
-                    # This case happens when only the french flag is detected
-                    description = language.chat("the French flag")
-                    print(f"Description: {description}")
-                    audio.speak(description)
+            if len(objects.difference(last_objects)) == 0:
+                if identical_start_time is None:
+                    identical_start_time = time.time()
 
+                elapsed_time = time.time() - identical_start_time
+                if elapsed_time >= args.shutdown_timeout:
+                    audio.speak("I am shutting down now. Goodbye!")
+                    break
+
+                if (
+                    not asked_for_new_object
+                    and elapsed_time >= (2 / 3) * args.shutdown_timeout
+                ):
+                    audio.speak("Do you want to show me something else?")
+                    asked_for_new_object = True
+
+                time.sleep(args.wait_time)
+                # Take a new frame after the wait time
+                continue
             else:
-                audio.speak("I could not find any objects.")
+                identical_start_time = None
+                asked_for_new_object = False
+
+            if objects:
+                object_str = ", ".join(objects)
+                audio.speak(f"I found {object_str}, let me find information about them.")
+                description = language.chat(object_str)
+            elif found_flag:
+                # This case happens when only the french flag is detected
+                description = language.chat("the French flag")
+            else:
+                description = "I could not find any objects."
                 print("No objects found.")
-                objects = "N/A"
+
+            print(f"Description: {description}")
+            audio.speak(description)
+
+            time.sleep(10)
+            audio.speak("Do you want to show me something else?")
+        except KeyboardInterrupt:
+            audio.speak("Stopping now! Goodbye!", language="en", skip_translation=True)
         except Exception as e:
-            audio.speak("I don't know what to say, sorry.")
+            audio.speak("I don't know what to say, sorry.", language="en", skip_translation=True)
             print(f"An error occurred: {e}")
             description = f"Error: {e}"
+        
+        last_objects = objects
 
         # Always store the information in the CSV file
         with open(csv_path, "a", newline="") as csvfile:
@@ -152,8 +205,10 @@ def main() -> None:
                 ]
             )
 
-        break
     camera.release()
+
+    if args.shutdown_at_exit:
+        os.system("shutdown now")
 
 
 if __name__ == "__main__":

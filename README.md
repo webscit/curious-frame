@@ -22,7 +22,7 @@ cd curious-frame
 Run the application using the following command:
 
 ```bash
-docker-compose up
+docker compose up
 ```
 
 ## Architecture
