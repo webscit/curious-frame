@@ -88,6 +88,18 @@ def main() -> None:
         action="store_true",
         help="Shutdown the OS when the program exits.",
     )
+    parser.add_argument(
+        "--audio-cache-dir",
+        type=str,
+        default="audio_cache",
+        help="The directory to store cached audio files (default: audio_cache).",
+    )
+    parser.add_argument(
+        "--audio-device",
+        type=str,
+        default="sysdefault",
+        help="The audio device to use for playback (default: sysdefault).",
+    )
     args = parser.parse_args()
 
     camera = Camera(
@@ -95,7 +107,13 @@ def main() -> None:
     )
     vision = Vision(model_name=args.vlm_model, revision=args.vlm_revision)
     language = Language(model=args.llm_model, url=args.ollama_url)
-    audio = Audio(piper_url=args.piper_url, language_model=language, language=args.language)
+    audio = Audio(
+        piper_url=args.piper_url,
+        language_model=language,
+        language=args.language,
+        cache_dir=args.audio_cache_dir,
+        aplay_device=args.audio_device,
+    )
 
     # Create a directory to store the captures
     capture_dir = Path(args.capture_dir)

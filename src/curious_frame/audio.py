@@ -20,6 +20,7 @@ class Audio:
         aplay_device: str = "sysdefault",
         language: str = "en",
         language_model: Language | None = None,
+        cache_dir: str = "audio_cache",
     ) -> None:
         """Initializes the Audio class.
 
@@ -28,12 +29,13 @@ class Audio:
             aplay_device: The aplay device to use for audio output.
             language: The language to use for audio output.
             language_model: The language model to use for translation.
+            cache_dir: The directory to store cached audio files.
         """
         self.piper_url = piper_url
         self.aplay_device = aplay_device
         self.language = language
         self.language_model = language_model
-        self.cache_dir = "audio_cache"
+        self.cache_dir = cache_dir
         if not os.path.exists(self.cache_dir):
             os.makedirs(self.cache_dir)
 
@@ -73,7 +75,7 @@ class Audio:
             data = {"text": to_speak}
             if is_french:
                 data["voice"] = "fr_FR-upmc-medium"
-                data["speaker_id"] = 0
+                data["speaker_id"] = "0"
 
             response = requests.post(self.piper_url, json=data, timeout=60)
             response.raise_for_status()
