@@ -206,6 +206,7 @@ def main() -> None:
             audio.speak("Do you want to show me something else?")
         except KeyboardInterrupt:
             audio.speak("Stopping now! Goodbye!", language="en", skip_translation=True)
+            break
         except Exception as e:
             audio.speak("I don't know what to say, sorry.", language="en", skip_translation=True)
             print(f"An error occurred: {e}")
