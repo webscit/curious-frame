@@ -165,6 +165,7 @@ def main() -> None:
                 audio.speak("I'm switching to English.")
 
             if len(objects.difference(last_objects)) == 0:
+                print("Identical objects detected, waiting for new input...")
                 if identical_start_time is None:
                     identical_start_time = time.time()
 
@@ -188,7 +189,7 @@ def main() -> None:
                 asked_for_new_object = False
 
             if objects:
-                object_str = ", ".join(objects)
+                object_str = ", ".join([*objects][:2])  # Limit to first two objects
                 audio.speak(f"I found {object_str}, let me find information about them.")
                 description = language.chat(object_str)
             elif found_flag:
