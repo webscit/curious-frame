@@ -75,7 +75,7 @@ class Audio:
             data = {"text": to_speak}
             if is_french:
                 data["voice"] = "fr_FR-upmc-medium"
-                data["speaker_id"] = "0"
+                data["speaker_id"] = 0
 
             response = requests.post(self.piper_url, json=data, timeout=60)
             response.raise_for_status()
