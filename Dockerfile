@@ -12,7 +12,8 @@ LABEL maintainer="Frédéric Collonval <frederic.collonval@webscit.com>"
 #     rm -rf /var/lib/apt/lists/* && \
 #     pip3 install -U -i ${PIP_INDEX_URL} transformers torch torchvision accelerate optimum-quanto
 
-RUN hf download "vikhyatk/moondream2" --revision "2025-06-21"
+RUN hf download "vikhyatk/moondream2" --revision "2025-06-21" && \
+    hf download "moondream/starmie-v1"
 
 COPY . /opt/curious_frame
 

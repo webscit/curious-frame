@@ -28,6 +28,9 @@ services:
     environment:
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility,graphics
       - PULSE_SERVER=unix:/run/user/1000/pulse/native
+      - HF_HUB_OFFLINE=1
+      - HF_DATASETS_OFFLINE=1
+      - TRANSFORMERS_OFFLINE=1
     runtime: nvidia
     shm_size: 8g
     devices:
