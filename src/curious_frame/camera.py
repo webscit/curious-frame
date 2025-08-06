@@ -17,7 +17,11 @@ class Camera:
             width: The width of the camera frame.
             height: The height of the camera frame.
         """
-        self.cap = cv2.VideoCapture(self._gstreamer_pipeline(camera_id, width, height, fps), cv2.CAP_GSTREAMER)
+        self.camera_id = camera_id
+        self.width = width
+        self.height = height
+        self.fps = fps
+        self.cap = None
 
     def get_frame(self) -> np.ndarray | None:
         """Gets a frame from the camera.
@@ -25,14 +29,27 @@ class Camera:
         Returns:
             The frame from the camera, or None if the frame could not be read.
         """
-        ret, frame = self.cap.read()
+        self.cap = cv2.VideoCapture(
+            self._gstreamer_pipeline(self.camera_id, self.width, self.height, self.fps),
+            cv2.CAP_GSTREAMER,
+        )
+        if not self.cap.isOpened():
+            return None
+
+        try:
+            ret, frame = self.cap.read()
+        finally:
+            self.release()
+
         if not ret:
             return None
         return frame
 
     def release(self) -> None:
         """Releases the camera."""
-        self.cap.release()
+        if self.cap is not None:
+            self.cap.release()
+            self.cap = None
 
     def save_frame(self, path: str, frame: np.ndarray) -> None:
         """Saves a frame to a file.

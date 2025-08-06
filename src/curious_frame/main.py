@@ -223,8 +223,6 @@ def main() -> None:
                 ]
             )
 
-    camera.release()
-
     if args.shutdown_at_exit:
         os.system("shutdown now")
 
