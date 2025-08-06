@@ -97,11 +97,11 @@ Here is a diagram of the architecture:
 graph TD
     subgraph Jetson Orin Nano
         subgraph Docker Compose
-            A[curious-frame] -->|Sends text prompt| B(ollama - gemma3n)
-            B -->|Returns text response| A
-            A -->|Sends text for TTS| C(piper)
+            A[curious-frame] -->|Sends text for TTS| C(piper)
             C -->|Returns audio| A
         end
+        A -->|Sends text prompt| B(ollama - gemma3n)
+        B -->|Returns text response| A
     end
 
     D(Camera) --> A
@@ -114,7 +114,7 @@ Here is the sequence diagram:
 sequenceDiagram
     loop exit if objects does not change for 10 min
         curious-frame->>+Camera: Request snapshot
-        Camera-->>-curious-frame:
+        Camera-->>-curious-frame: 
         curious-frame->>+curious-frame: Search for objects
         curious-frame->>+curious-frame: Switch to French if flag found
         curious-frame->>+ollama Gemma3n: Request a description of the objects
