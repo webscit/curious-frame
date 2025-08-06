@@ -49,7 +49,7 @@ class Language:
                 },
                 {
                     "role": "user",
-                    "content": f"Tell what those objects are and what they are used to: {objects}.",
+                    "content": f"Tell what those objects are and what they are used for: {objects}.",
                 }
             ],
             "stream": False,
