@@ -2,7 +2,8 @@
 
 Curious Frame is a Python application designed for the Gemma3n Impact Challenge. It serves as an interactive, offline-ready learning experience for curious kids supporting multi-languages. The application uses a camera to identify objects and "action cards" presented within a physical frame, and then uses the Gemma3n model to provide educational information about the objects through speech.
 
-[![Watch the demo](https://img.youtube.com/vi/yx0OXfG8UnQ /hqdefault.jpg)](https://www.youtube.com/watch?v=yx0OXfG8UnQ)
+Check out the demo:
+[![Watch the demo](http://img.youtube.com/vi/yx0OXfG8UnQ/hqdefault.jpg)](http://www.youtube.com/watch?v=yx0OXfG8UnQ "Watch the demo video")
 
 ## How to Install
 
