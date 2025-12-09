@@ -25,7 +25,9 @@ class Vision:
             device_map="auto",
             quantization_config=quanto_config,
         )
-        self.query = "List object within the cardboard frame.\nFormat the response as a comma-separated list of objects, without any additional text or formatting."
+        self.query = """List object within the cardboard frame.
+Format the response as a comma-separated list of object names, without any additional text or formatting.
+If there is no cardboard frame, return an empty string."""
 
     def find_objects(self, frame: np.ndarray) -> str | None:
         """Finds the objects displayed in the cardboard frame within the image.
