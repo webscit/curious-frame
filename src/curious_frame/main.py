@@ -192,7 +192,8 @@ def main() -> None:
                     not asked_for_new_object
                     and elapsed_time >= (2 / 3) * args.shutdown_timeout
                 ):
-                    audio.speak("Do you want to show me something else?")
+                    msg = "Veux-tu me montrer autre chose?" if audio.language == "fr" else "Do you want to show me something else?"
+                    audio.speak(msg, skip_translation=True)
                     asked_for_new_object = True
 
                 time.sleep(args.wait_time)
@@ -217,7 +218,7 @@ def main() -> None:
                 logger.info("No objects found.")
 
             logger.info(f"Description: {description}")
-            audio.speak(description, skip_translation=args.multilanguage)
+            audio.speak(description.replace("*", ""), skip_translation=args.multilanguage)
 
             time.sleep(5)
             msg = "Veux-tu me montrer autre chose?" if audio.language == "fr" else "Do you want to show me something else?"
