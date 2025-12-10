@@ -32,11 +32,11 @@ class Language:
         self.model = model
         self.url = url
 
-    def chat(self, objects: str) -> str:
+    def chat(self, query: str) -> str:
         """Generates a description of the objects from the language model.
 
         Args:
-            objects: The objects to describe.
+            query: The query to send asking for the objects to describe.
 
         Returns:
             The description of the objects.
@@ -49,11 +49,11 @@ class Language:
                     "content": """You are a helpful assistant that describes objects displayed by a child.
                     The child is curious and asks questions about the objects.
                     You should provide a short, simple description suitable for a child between 2 and 8 years old.
-                    Express yourself as a person telling a story to the child."""
+                    Express yourself as a person telling a story to the child. Don't use Markdown format and don't use emojis."""
                 },
                 {
                     "role": "user",
-                    "content": f"Tell what those objects are and what they are used for: {objects}.",
+                    "content": query,
                 }
             ],
             "stream": False,

@@ -63,6 +63,11 @@ If there is no cardboard frame, return _no cardboard frame_."""
             buffered = BytesIO()
             image.save(buffered, format="JPEG")
             image_b64 = base64.b64encode(buffered.getvalue()).decode("utf-8")
+            response = requests.post(self.url, json={"model": self.model, "messages": [{"role": "user", "content": "Is there a French flag in the image? Answer with Yes or No.", "images": [image_b64]}],"stream":False, "keep_alive": -1})
+            response.raise_for_status()
+            response_content = response.json().get("message", {}).get("content", "").strip().lower()
+            found_french_flag = "yes" == response_content
+            logger.info("Found a French flag: %s", response_content)
             data = {
                 "model": self.model,
                 "messages": [
@@ -72,7 +77,7 @@ If there is no cardboard frame, return _no cardboard frame_."""
                     },
                     {
                         "role": "user",
-                        "content": "List only the objects within the cardboard frame.",
+                        "content": "Liste uniquement les objets dans le cadre en carton. Réponds en français." if found_french_flag else "List only the objects within the cardboard frame.",
                         "images": [],
                     }
                 ],
@@ -86,6 +91,8 @@ If there is no cardboard frame, return _no cardboard frame_."""
             response = requests.post(self.url, json=data)
             response.raise_for_status()
             objects = response.json().get("message", {}).get("content").strip()
+            if found_french_flag:
+                objects += f",French flag"
 
         else:
             output = self.model.query(image, self.query)

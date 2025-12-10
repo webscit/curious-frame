@@ -202,13 +202,15 @@ def main() -> None:
                 identical_start_time = None
                 asked_for_new_object = False
 
-            if objects:
+            if len(objects):
                 object_str = ", ".join([*objects][:2])  # Limit to first two objects
-                text = f"J'ai vu {object_str}. Je recherche des informations sur ceux-ci." if audio.language == "fr" else f"I found {object_str}. Let me find information about them."
+                text = f"J'ai vu {object_str}. Je recherche des informations sur ceux-ci." if args.multilanguage and audio.language == "fr" else f"I found {object_str}. Let me find information about them."
                 audio.speak(text, skip_translation=True)
-                description = language.chat(object_str)
+                query = f"Dis moi ce que sont les objets suivants et à quoi ils servent: {object_str}." if args.multilanguage and audio.language == "fr" else f"Tell what those objects are and what they are used for: {object_str}."
+                description = language.chat(query)
             elif found_flag:
                 # This case happens when only the french flag is detected
+                query = "Qu'est-ce que le drapeau français et à quoi sert-il?" if args.multilanguage and audio.language == "fr" else "Tell me what is the French flag and what it is used for."
                 description = language.chat("the French flag")
             else:
                 description = "I could not find any objects."
@@ -218,7 +220,8 @@ def main() -> None:
             audio.speak(description, skip_translation=args.multilanguage)
 
             time.sleep(5)
-            audio.speak("Do you want to show me something else?")
+            msg = "Veux-tu me montrer autre chose?" if audio.language == "fr" else "Do you want to show me something else?"
+            audio.speak(msg, skip_translation=True)
         except KeyboardInterrupt:
             audio.speak("Stopping now! Goodbye!", language="en", skip_translation=True)
             break
