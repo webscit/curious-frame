@@ -3,7 +3,11 @@
 # SPDX-License-Identifier: MIT
 """Language module for the Curious Frame project."""
 
+import logging
+
 import requests
+
+logger = logging.getLogger(__name__)
 
 GENERATION_OPTIONS = {
     "num_predict": 80,    # Maximum response length
@@ -45,7 +49,7 @@ class Language:
                     "content": """You are a helpful assistant that describes objects displayed by a child.
                     The child is curious and asks questions about the objects.
                     You should provide a short, simple description suitable for a child between 2 and 8 years old.
-                    Do not use any special formatting or emojis in your response."""
+                    Express yourself as a person telling a story to the child."""
                 },
                 {
                     "role": "user",
@@ -56,7 +60,7 @@ class Language:
             "keep_alive": -1,
         }
 
-        print(f"Prompt sent: {data}")
+        logger.info(f"Prompt sent: {data}")
         response = requests.post(self.url, json=data)
         response.raise_for_status()
         return response.json().get("message", {}).get("content").strip()
@@ -87,7 +91,7 @@ class Language:
             "keep_alive": -1,
         }
 
-        print(f"Translation prompt sent: {data}")
+        logger.info(f"Translation prompt sent: {data}")
         response = requests.post(self.url, json=data)
         response.raise_for_status()
         return response.json().get("message", {}).get("content").strip()

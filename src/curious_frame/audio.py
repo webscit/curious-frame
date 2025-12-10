@@ -3,12 +3,15 @@
 # SPDX-License-Identifier: MIT
 """Audio module for the Curious Frame project."""
 import hashlib
+import logging
 import os
 import subprocess
 
 import requests
 
-from src.curious_frame.language import Language
+from curious_frame.language import Language
+
+logger = logging.getLogger(__name__)
 
 
 class Audio:
@@ -90,7 +93,7 @@ class Audio:
                 text=True,
             )
         except subprocess.CalledProcessError as e:
-            print(f"Error playing audio: {e.stderr}")
+            logger.exception(f"Error playing audio: {e.stderr}", exc_info=e)
             # Clean up the cached file if playback fails
             if os.path.exists(cached_audio_path):
                 os.remove(cached_audio_path)
