@@ -10,6 +10,7 @@ Check out the demo:
 > some additional call to translate to French.
 > To use that model, you need to change the command line for curious_frame in `docker-compose.yaml` to  
 > `python3 -m curious_frame --capture-dir /app/snapshots --multilanguage --vlm-model "ministral-3:3b" --llm-model "ministral-3:3b"`
+> And don't forget to pull the model with ollama prior to executing the code: `ollama pull ministral-3:3b`.
 > This was demonstrated on December 10th, 2025 at [Python Rennes Meetup](./Python_Rennes_20251210_edge_ai.pdf)
 
 ## How to Install
