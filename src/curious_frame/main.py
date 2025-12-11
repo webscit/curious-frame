@@ -4,6 +4,7 @@
 """Main module for the Curious Frame project."""
 import argparse
 import csv
+import logging
 import os
 import time
 from datetime import datetime
@@ -13,6 +14,8 @@ from curious_frame.audio import Audio
 from curious_frame.camera import Camera
 from curious_frame.language import Language
 from curious_frame.vision import Vision
+
+logger = logging.getLogger("curious_frame")
 
 
 def main() -> None:
@@ -100,12 +103,21 @@ def main() -> None:
         default="sysdefault",
         help="The audio device to use for playback (default: sysdefault).",
     )
+    parser.add_argument(
+        "--multilanguage",
+        action="store_true",
+        help="The LLM can speak multiple languages."
+    )
+    parser.add_argument("--verbose", "-v", action="store_true", help="Display verbose logs.")
     args = parser.parse_args()
+    
+    logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO)
 
     camera = Camera(
         camera_id=args.camera_id, width=args.width, height=args.height, fps=args.fps
     )
-    vision = Vision(model_name=args.vlm_model, revision=args.vlm_revision)
+    multimodal_model = args.vlm_model == args.llm_model
+    vision = Vision(model_name=args.vlm_model, revision=args.vlm_revision, url=args.ollama_url)
     language = Language(model=args.llm_model, url=args.ollama_url)
     audio = Audio(
         piper_url=args.piper_url,
@@ -127,7 +139,7 @@ def main() -> None:
     asked_for_new_object = False
 
     while True:
-        print("Taking a new snapshot...")
+        logger.info("Taking a new snapshot...")
         frame = camera.get_frame()
         if frame is None:
             break
@@ -136,36 +148,38 @@ def main() -> None:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         image_path = capture_dir / f"{timestamp}.jpg"
         camera.save_frame(str(image_path), frame)
-        print(f"Snapshot taken and saved in {image_path!s}")
+        logger.info(f"Snapshot taken and saved in {image_path!s}")
 
         objects = set()
         description = ""
         objects_list = None
         try:
             # audio.speak("I am looking for objects.")
-            print("Analyzing the snapshot...")
+            logger.info("Analyzing the snapshot...")
             objects_list = vision.find_objects(frame) or ""
-            print(f"Found objects: {objects_list}")
+            logger.info(f"Found objects: {objects_list}")
             found_flag = False
 
             for obj in objects_list.split(","):
                 obj = obj.strip()
-                if obj:
-                    if "french flag" not in obj.lower():
-                        if obj.lower() != "unknown":
-                            objects.add(obj)
-                    else:
-                        found_flag = True
-                        if audio.language != "fr":
-                            audio.set_language("fr")
-                            audio.speak("Je vais maintenant parler en français.", skip_translation=True)
+                if not obj:
+                    continue
+
+                if "french flag" not in obj.lower():
+                    if obj.lower() not in {"cardboard frame", "unknown"}:
+                        objects.add(obj)
+                else:
+                    found_flag = True
+                    if audio.language != "fr":
+                        audio.set_language("fr")
+                        audio.speak("Je vais maintenant parler en français.", skip_translation=True)
             
             if not found_flag and audio.language != "en":
                 audio.set_language("en")
                 audio.speak("I'm switching to English.")
 
             if len(objects.difference(last_objects)) == 0:
-                print("Identical objects detected, waiting for new input...")
+                logger.info("Identical objects detected, waiting for new input...")
                 if identical_start_time is None:
                     identical_start_time = time.time()
 
@@ -178,7 +192,8 @@ def main() -> None:
                     not asked_for_new_object
                     and elapsed_time >= (2 / 3) * args.shutdown_timeout
                 ):
-                    audio.speak("Do you want to show me something else?")
+                    msg = "Veux-tu me montrer autre chose?" if audio.language == "fr" else "Do you want to show me something else?"
+                    audio.speak(msg, skip_translation=True)
                     asked_for_new_object = True
 
                 time.sleep(args.wait_time)
@@ -188,28 +203,32 @@ def main() -> None:
                 identical_start_time = None
                 asked_for_new_object = False
 
-            if objects:
+            if len(objects):
                 object_str = ", ".join([*objects][:2])  # Limit to first two objects
-                audio.speak(f"I found {object_str}, let me find information about them.")
-                description = language.chat(object_str)
+                text = f"J'ai vu {object_str}. Je recherche des informations sur ceux-ci." if args.multilanguage and audio.language == "fr" else f"I found {object_str}. Let me find information about them."
+                audio.speak(text, skip_translation=True)
+                query = f"Dis moi ce que sont les objets suivants et à quoi ils servent: {object_str}." if args.multilanguage and audio.language == "fr" else f"Tell what those objects are and what they are used for: {object_str}."
+                description = language.chat(query)
             elif found_flag:
                 # This case happens when only the french flag is detected
+                query = "Qu'est-ce que le drapeau français et à quoi sert-il?" if args.multilanguage and audio.language == "fr" else "Tell me what is the French flag and what it is used for."
                 description = language.chat("the French flag")
             else:
                 description = "I could not find any objects."
-                print("No objects found.")
+                logger.info("No objects found.")
 
-            print(f"Description: {description}")
-            audio.speak(description)
+            logger.info(f"Description: {description}")
+            audio.speak(description.replace("*", ""), skip_translation=args.multilanguage)
 
             time.sleep(5)
-            audio.speak("Do you want to show me something else?")
+            msg = "Veux-tu me montrer autre chose?" if audio.language == "fr" else "Do you want to show me something else?"
+            audio.speak(msg, skip_translation=True)
         except KeyboardInterrupt:
             audio.speak("Stopping now! Goodbye!", language="en", skip_translation=True)
             break
         except Exception as e:
             audio.speak("I don't know what to say, sorry.", language="en", skip_translation=True)
-            print(f"An error occurred: {e}")
+            logger.exception(f"An error occurred.", exc_info=e)
             description = f"Error: {e}"
         
         last_objects = objects
