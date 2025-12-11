@@ -5,6 +5,13 @@ Curious Frame is a Python application designed for the Gemma3n Impact Challenge.
 Check out the demo:  
 [![Watch the demo](http://img.youtube.com/vi/yx0OXfG8UnQ/hqdefault.jpg)](http://www.youtube.com/watch?v=yx0OXfG8UnQ "Watch the demo video")
 
+> [!NOTE] Latest version can use ministral3 as single model for snapshot analysis and object description. Moreover
+> it can directly reply in French. So this allows to reduce the lantency by leveraging only the GPU and avoiding
+> some additional call to translate to French.
+> To use that model, you need to change the command line for curious_frame in `docker-compose.yaml` to  
+> `python3 -m curious_frame --capture-dir /app/snapshots --multilanguage --vlm-model "ministral-3:3b" --llm-model "ministral-3:3b"`
+> This was demonstrated on December 10th, 2025 at [Python Rennes Meetup](./Python_Rennes_20251210_edge_ai.pdf)
+
 ## How to Install
 
 To run this project, you'll need a NVIDIA® Jetson Orin Nano™ Developer Kit with JetPack 6.2.1 installed; see [Initial Setup Guide](https://www.jetson-ai-lab.com/initial_setup_jon.html).
